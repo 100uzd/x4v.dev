@@ -2,25 +2,366 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>X</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X4V.dev</title>
   <link rel="stylesheet" href="x.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="c">
-    <h1 class="t">x is coming</h1>
-    <div id="d" class="d">
-      <div class="e"><span id="da">00</span><small>d</small></div>
-      <div class="e"><span id="h">00</span><small>h</small></div>
-      <div class="e"><span id="m">00</span><small>m</small></div>
-      <div class="e"><span id="s">00</span><small>s</small></div>
+<body class="cyber-body">
+  <div class="bg-base"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-gradient"></div>
+
+  <div class="top-line"></div>
+  <div class="bottom-line"></div>
+
+  <div class="glow-orb orb1"></div>
+  <div class="glow-orb orb2"></div>
+  <div class="glow-orb orb3"></div>
+
+  <div class="corner-element top-left"></div>
+  <div class="corner-element top-right"></div>
+  <div class="corner-element bottom-left"></div>
+  <div class="corner-element bottom-right"></div>
+
+  <div class="cyber-scanline"></div>
+
+  <div class="container">
+    <header class="cyber-header">
+      <div class="header-left">
+        <div>
+          <h1 class="site-title">
+            <span class="gradient-text">X4V.DEV</span>
+          </h1>
+          <div class="cyber-subtitle">
+            <span>EXECUTOR MONITORING SYSTEM</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <a href="https://discord.gg/Cp9nn3QCrw" target="_blank" rel="noopener noreferrer" class="cyber-neo-button discord">
+          <div class="button-glow"></div>
+          <div class="button-border button-border-top"></div>
+          <div class="button-border button-border-bottom"></div>
+          <div class="button-border button-border-left"></div>
+          <div class="button-border button-border-right"></div>
+          <div class="button-text">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            JOIN OUR DISCORD!
+          </div>
+        </a>
+        
+        <div class="cyber-search">
+          <div class="search-container">
+            <div class="search-icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input type="text" id="searchInput" placeholder="SEARCH EXECUTORS..." class="search-input">
+            <div class="search-bottom-line"></div>
+            <div class="search-corner top-left"></div>
+            <div class="search-corner top-right"></div>
+            <div class="search-corner bottom-left"></div>
+            <div class="search-corner bottom-right"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="cyber-stats">
+      <div class="cyber-stat-card reputable">
+        <div class="stat-bg"></div>
+        <div class="stat-top-line"></div>
+        <div class="stat-bottom-line"></div>
+        <div class="stat-left-line"></div>
+        <div class="stat-right-line"></div>
+        <div class="stat-corner top-left"></div>
+        <div class="stat-corner top-right"></div>
+        <div class="stat-corner bottom-left"></div>
+        <div class="stat-corner bottom-right"></div>
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-secondary-icon">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>REPUTABLE</span>
+            </div>
+            <div class="stat-value" id="reputableCount">0</div>
+            <div class="stat-sublabel">
+              <span class="stat-dot"></span>
+              <span>EXECUTORS</span>
+            </div>
+          </div>
+          <div class="stat-icon-container reputable">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-progress-bar">
+          <div class="stat-progress reputable" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="cyber-stat-card untrusted">
+        <div class="stat-bg"></div>
+        <div class="stat-top-line"></div>
+        <div class="stat-bottom-line"></div>
+        <div class="stat-left-line"></div>
+        <div class="stat-right-line"></div>
+        <div class="stat-corner top-left"></div>
+        <div class="stat-corner top-right"></div>
+        <div class="stat-corner bottom-left"></div>
+        <div class="stat-corner bottom-right"></div>
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-secondary-icon">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+              <span>UNTRUSTED</span>
+            </div>
+            <div class="stat-value" id="untrustedCount">0</div>
+            <div class="stat-sublabel">
+              <span class="stat-dot"></span>
+              <span>EXECUTORS</span>
+            </div>
+          </div>
+          <div class="stat-icon-container untrusted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-progress-bar">
+          <div class="stat-progress untrusted" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="cyber-stat-card discontinued">
+        <div class="stat-bg"></div>
+        <div class="stat-top-line"></div>
+        <div class="stat-bottom-line"></div>
+        <div class="stat-left-line"></div>
+        <div class="stat-right-line"></div>
+        <div class="stat-corner top-left"></div>
+        <div class="stat-corner top-right"></div>
+        <div class="stat-corner bottom-left"></div>
+        <div class="stat-corner bottom-right"></div>
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-secondary-icon">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                <line x1="6" y1="1" x2="6" y2="4"></line>
+                <line x1="10" y1="1" x2="10" y2="4"></line>
+                <line x1="14" y1="1" x2="14" y2="4"></line>
+              </svg>
+              <span>DISCONTINUED</span>
+            </div>
+            <div class="stat-value" id="discontinuedCount">0</div>
+            <div class="stat-sublabel">
+              <span class="stat-dot"></span>
+              <span>EXECUTORS</span>
+            </div>
+          </div>
+          <div class="stat-icon-container discontinued">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+              <polyline points="21 8 21 21 3 21 3 8"></polyline>
+              <rect x="1" y="3" width="22" height="5"></rect>
+              <line x1="10" y1="12" x2="14" y2="12"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-progress-bar">
+          <div class="stat-progress discontinued" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="cyber-stat-card scam">
+        <div class="stat-bg"></div>
+        <div class="stat-top-line"></div>
+        <div class="stat-bottom-line"></div>
+        <div class="stat-left-line"></div>
+        <div class="stat-right-line"></div>
+        <div class="stat-corner top-left"></div>
+        <div class="stat-corner top-right"></div>
+        <div class="stat-corner bottom-left"></div>
+        <div class="stat-corner bottom-right"></div>
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-secondary-icon">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+              </svg>
+              <span>SCAM</span>
+            </div>
+            <div class="stat-value" id="scamCount">0</div>
+            <div class="stat-sublabel">
+              <span class="stat-dot"></span>
+              <span>EXECUTORS</span>
+            </div>
+          </div>
+          <div class="stat-icon-container scam">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+              <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-progress-bar">
+          <div class="stat-progress scam" style="width: 0%"></div>
+        </div>
+      </div>
     </div>
-    <div class="img">
-      <img src="56F4154D-44C9-4F7A-B9B1-D5EEFC739B8F.png" alt="list" class="i">
-      <div class="o">hover to reveal</div>
+
+    <div class="cyber-tabs">
+      <div class="tabs-container">
+        <button class="cyber-tab active" data-tab="reputable">
+          <span class="tab-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            REPUTABLE
+          </span>
+          <div class="tab-active-bg"></div>
+        </button>
+        <button class="cyber-tab" data-tab="untrusted">
+          <span class="tab-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            UNTRUSTED
+          </span>
+          <div class="tab-active-bg"></div>
+        </button>
+        <button class="cyber-tab" data-tab="discontinued">
+          <span class="tab-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <polyline points="21 8 21 21 3 21 3 8"></polyline>
+              <rect x="1" y="3" width="22" height="5"></rect>
+              <line x1="10" y1="12" x2="14" y2="12"></line>
+            </svg>
+            DISCONTINUED
+          </span>
+          <div class="tab-active-bg"></div>
+        </button>
+        <button class="cyber-tab" data-tab="scam">
+          <span class="tab-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            SCAM
+          </span>
+          <div class="tab-active-bg"></div>
+        </button>
+      </div>
+      <div class="tabs-bottom-line"></div>
+    </div>
+
+    <div class="tab-content-container">
+      <div class="cyber-panel reputable active" id="reputable-panel">
+        <div class="cyber-panel-header">
+          <div class="cyber-panel-title">
+            <div class="cyber-icon reputable">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="panel-icon">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <h2>REPUTABLE EXECUTORS</h2>
+          </div>
+          <p class="cyber-panel-desc">
+            Executors listed below are reputable products. This does not mean they will remain undetected.
+          </p>
+        </div>
+        <div class="cyber-product-grid" id="reputable-grid"></div>
+      </div>
+
+      <div class="cyber-panel untrusted" id="untrusted-panel">
+        <div class="cyber-panel-header">
+          <div class="cyber-panel-title">
+            <div class="cyber-icon untrusted">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="panel-icon">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h2>UNTRUSTED EXECUTORS</h2>
+          </div>
+          <p class="cyber-panel-desc">
+            Executors listed below are either a bad product, have a high chance of exit scamming or being malware.
+            Use the executors listed below at your own risk.
+          </p>
+        </div>
+        <div class="cyber-product-grid" id="untrusted-grid"></div>
+      </div>
+
+      <div class="cyber-panel discontinued" id="discontinued-panel">
+        <div class="cyber-panel-header">
+          <div class="cyber-panel-title">
+            <div class="cyber-icon discontinued">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="panel-icon">
+                <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                <rect x="1" y="3" width="22" height="5"></rect>
+                <line x1="10" y1="12" x2="14" y2="12"></line>
+              </svg>
+            </div>
+            <h2>DISCONTINUED EXECUTORS</h2>
+          </div>
+          <p class="cyber-panel-desc">
+            Executors listed below have discontinued peacefully without exit scamming or ratting users.
+          </p>
+        </div>
+        <div class="cyber-product-grid" id="discontinued-grid"></div>
+      </div>
+
+      <div class="cyber-panel scam" id="scam-panel">
+        <div class="cyber-panel-header">
+          <div class="cyber-panel-title">
+            <div class="cyber-icon scam">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="panel-icon">
+                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h2>SCAM EXECUTORS</h2>
+          </div>
+          <p class="cyber-panel-desc">
+            Executors listed below have been confirmed to either be a rat or a scam. The developers listed below
+            should also be avoided at all costs in upcoming products.
+          </p>
+        </div>
+        <div class="cyber-scam-grid" id="scam-grid"></div>
+      </div>
     </div>
   </div>
+
+  <div id="toast-container"></div>
+
   <script src="x.js"></script>
 </body>
 </html>
