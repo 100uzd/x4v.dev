@@ -4,11 +4,11 @@ body{margin:0;padding:0;font-family:'Poppins',sans-serif;display:flex;align-item
 .c{perspective:1000px;text-align:center;background:rgba(0,0,0,0.4);padding:40px 30px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,0.6)}
 .t{font-size:3em;margin:0 0 30px;font-weight:500;color:#fff;animation:fadeSlide 1s ease forwards}
 .d{display:flex;justify-content:center;gap:20px;margin-bottom:40px}
-.e{transform-style:preserve-3d;transition:transform .2s ease,background .3s ease;background:rgba(255,255,255,0.1);padding:15px 20px;border-radius:12px;display:flex;flex-direction:column;align-items:center}
-.e span{font-size:2.5em;font-weight:700;transition:all .5s ease}
-.e small{font-size:0.8em;margin-top:5px;opacity:0.7}
+.e{transform-style:preserve-3d;transition:transform .2s ease,background .3s ease;background:rgba(255,255,255,0.1);padding:15px 20px;border-radius:12px;display:flex;flex-direction:column;align-items:center;color:#fff}
+.e span{font-size:2.5em;font-weight:700;transition:all .5s ease;color:#fff}
+.e small{font-size:0.8em;margin-top:5px;opacity:0.9;color:#fff}
 .fade{opacity:0;transform:scale(1.2)}
-.img{position:relative;width:80%;max-width:600px;overflow:hidden;border-radius:20px;cursor:pointer;margin-top:40px}
+.img{position:relative;width:80%;max-width:600px;overflow:hidden;border-radius:20px;cursor:pointer;margin:40px auto 0}
 .i{width:100%;display:block;transition:transform .5s ease}
 .o{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);color:#ccc;font-size:1.5em;transition:transform .6s ease,opacity .6s ease}
 .img:hover .o{opacity:0;transform:translateY(-30px)}
