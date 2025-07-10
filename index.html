@@ -84,7 +84,6 @@
             animation: backgroundPulse 8s ease-in-out infinite;
         }
 
-
         #background::after {
             content: "";
             position: absolute;
@@ -319,6 +318,7 @@
             margin-bottom: 4rem;
             animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
             opacity: 0;
+            text-decoration: none; /* Add this line */
         }
 
         .featured-article:hover {
@@ -357,10 +357,12 @@
             margin-bottom: 1rem;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .featured-article:hover h2 {
             color: var(--accent);
+            text-decoration: none;
         }
 
         .featured-article p {
@@ -801,7 +803,7 @@
             <h1>x4v.dev, Projects & Documentation</h1>
             <div class="author">
                 <div class="avatar">
-                    <img src="/assets/x4v.png" alt="Avatar">
+                    <img src="https://placehold.co/40x40/10111b/a8b3cf?text=x4v" alt="Avatar">
                   </div>                  
                 <div class="author-info">
                     <span>@nuvq</span>
@@ -811,8 +813,8 @@
             </div>
         </header>
         
-        <div id="featured-article" class="card featured-article" style="display: none;">
-        </div>
+        <a id="featured-article" class="card featured-article" style="display: none;">
+        </a>
         
         <div class="projects-section animate-on-scroll">
             <h2 class="section-title">Projects</h2>
@@ -840,7 +842,6 @@
                     <p>View source code and contribute to our projects.</p>
                 </a>
             </div>
-        </div>
         
         <footer class="site-footer">
             <div class="footer-content">
@@ -858,24 +859,46 @@
 
     <script>
         const data = {
-            featuredArticle: null,
-            projects: [],
-            recentPublications: []
+            featuredArticle: {
+                tag: 'Technical Guide',
+                title: 'Roblox Offset Dumper & Pattern Scanning Guide',
+                description: 'A comprehensive guide on how offset dumpers work to find memory addresses in Roblox after updates, including a full C++ proof-of-concept.',
+                link: 'https://x4v.dev/posts/pattern'
+            },
+            projects: [
+                {
+                    title: 'Roblox Offset Dumper',
+                    description: 'A C++ based proof-of-concept for a dynamic pattern scanner to find memory offsets in Roblox after updates.',
+                    link: 'https://x4v.dev/posts/pattern#4',
+                    status: 'development',
+                    technologies: ['C++', 'WinAPI', 'Reverse Engineering'],
+                    lastUpdated: 'July 10, 2025'
+                }
+            ],
+            recentPublications: [
+                 {
+                    title: 'Roblox Offset Dumper & Pattern Scanning Guide',
+                    description: 'A comprehensive guide on how offset dumpers work, including a full C++ proof-of-concept.',
+                    link: 'https://x4v.dev/posts/pattern',
+                    date: 'July 10, 2025'
+                }
+            ]
         };
 
         function populateFeaturedArticle() {
             const featuredArticle = document.getElementById('featured-article');
             if (data.featuredArticle) {
                 featuredArticle.style.display = 'block';
+                featuredArticle.href = data.featuredArticle.link;
                 featuredArticle.innerHTML = `
                     <div class="featured-content">
                         <span class="featured-tag">${data.featuredArticle.tag}</span>
                         <h2>${data.featuredArticle.title}</h2>
                         <p>${data.featuredArticle.description}</p>
-                        <a href="${data.featuredArticle.link}" class="read-more">
+                        <div class="read-more">
                             Read Article
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </a>
+                        </div>
                     </div>
                 `;
             } else {
