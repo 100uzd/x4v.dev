@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Offset Dumper & Pattern Scanning Guide - x4v.dev, Projects & Documentation</title>
+    <style>
+        :root {
+            --background: #0a0a0f;
+            --card-bg: rgba(16, 17, 27, 0.6);
+            --text: #ffffff;
+            --text-secondary: #a8b3cf;
+            --border: rgba(42, 43, 62, 0.7);
+            --accent: #606fee;
+            --transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-bounce: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-fast: all 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent), rgba(96, 111, 238, 0.6));
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #7c8aff, var(--accent));
+            box-shadow: 0 0 10px rgba(96, 111, 238, 0.4);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--background);
+        }
+
+        /* Firefox scrollbar */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--background);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-color: var(--background);
+        }
+
+        #background::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.8;
+            background-image: url("/assets/background.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: backgroundPulse 8s ease-in-out infinite;
+        }
+
+        #background::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10, 10, 15, 0.2), rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.6));
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            animation: fadeInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+            background: rgba(96, 111, 238, 0.1);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .back-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover svg {
+            transform: translateX(-3px);
+        }
+
+        header {
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+            opacity: 0;
+        }
+
+        .tag {
+            display: inline-flex;
+            padding: 0.375rem 0.75rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .tag:hover {
+            transform: translateY(-4px) scale(1.1);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 8px 25px rgba(96, 111, 238, 0.4);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        h1:hover {
+            transform: translateY(-3px) scale(1.02);
+            filter: drop-shadow(0 6px 12px rgba(96, 111, 238, 0.4));
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 2rem;
+            height: 2rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .avatar:hover {
+            transform: scale(1.2);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(96, 111, 238, 0.6);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .avatar:hover img {
+            transform: scale(1.15);
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent);
+        }
+
+        .toc {
+            background: rgba(16, 17, 27, 0.4);
+            animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+            opacity: 0;
+        }
+
+        .toc h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .card:hover .toc h2 {
+            color: var(--accent);
+        }
+
+        .toc nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 0;
+            text-align: left;
+        }
+
+        .toc a {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 0.25rem 0;
+            width: 100%;
+            position: relative;
+        }
+
+        .toc a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--accent);
+        }
+
+        .toc a:hover::after {
+            width: 100%;
+        }
+
+        .toc a:hover .text {
+            transform: translateX(0.5rem);
+        }
+
+        .toc .number {
+            width: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            opacity: 0.5;
+            text-align: left;
+            margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .toc a:hover .number {
+            color: var(--accent);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .toc .text {
+            transition: var(--transition);
+        }
+
+        .notice {
+            background: rgba(16, 17, 27, 0.4);
+            animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+            opacity: 0;
+        }
+
+        .notice p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .card:hover .notice p {
+            color: var(--text);
+        }
+
+        article {
+            animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
+            opacity: 0;
+        }
+
+        article h2 {
+            font-size: 2.25rem;
+            color: var(--text);
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            scroll-margin-top: 2rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        article h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        article h2:hover {
+            color: var(--accent);
+        }
+
+        article h2:hover::after {
+            width: 100%;
+        }
+
+        .anchor {
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        h2:hover .anchor {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .anchor svg {
+            width: 1rem;
+            height: 1rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .anchor:hover svg {
+            color: var(--accent);
+        }
+
+        .content {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            line-height: 1.75;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .highlights {
+            background: rgba(16, 17, 27, 0.4);
+        }
+
+        .highlights h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .card:hover .highlights h3 {
+            color: var(--accent);
+        }
+
+        .highlights ul {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .highlights li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .card:hover .highlights li {
+            color: var(--text);
+        }
+
+        .check {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+            margin-top: 0.25rem;
+        }
+
+        .card:hover .check {
+            background: rgba(96, 111, 238, 0.2);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .check svg {
+            width: 1rem;
+            height: 1rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .card:hover .check svg {
+            color: var(--accent);
+        }
+
+        .site-footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s forwards;
+            opacity: 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-maintained {
+            color: var(--text-secondary);
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .footer-right a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .footer-right a:hover {
+            color: var(--accent);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .footer-right a:hover::after {
+            width: 100%;
+        }
+
+        /* --- Code Block Styles --- */
+        pre {
+            background: #10111b;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        code {
+            font-family: inherit;
+            color: #d4d4d4;
+        }
+        .token.comment { color: #6a9955; font-style: italic; }
+        .token.preprocessor { color: #808080; }
+        .token.keyword { color: #569cd6; }
+        .token.type { color: #4ec9b0; }
+        .token.class-name { color: #4ec9b0; }
+        .token.function { color: #dcdcaa; }
+        .token.string { color: #ce9178; }
+        .token.number { color: #b5cea8; }
+        .token.operator { color: #d4d4d4; }
+        .token.punctuation { color: #d4d4d4; }
+        .token.variable { color: #9cdcfe; }
+        .token.literal-constant { color: #d16969; }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            article h2 {
+                font-size: 1.75rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .footer-left {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .footer-right {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="background"></div>
+    <div class="container">
+        <nav>
+            <a href="https://x4v.dev/" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Home
+            </a>
+        </nav>
+        <header>
+            <span class="tag">Technical Guide</span>
+            <h1>Roblox Offset Dumper & Pattern Scanning Guide</h1>
+            <div class="author">
+                <div class="avatar">
+                    <img src="/assets/x4v.png" alt="Avatar">
+                </div>  
+                <div class="author-info">
+                    <span>@nuvq</span>
+                    <span class="dot">•</span>
+                    <time>July 10, 2025</time>
+                </div>
+            </div>
+        </header>
+
+        <div class="card toc">
+            <h2>Table of Contents</h2>
+            <nav>
+                <a href="#1"><span class="number">1.</span><span class="text">The Problem: Roblox's Ever-Changing Memory</span></a>
+                <a href="#2"><span class="number">2.</span><span class="text">The Solution: Dynamic Pattern Scanning</span></a>
+                <a href="#3"><span class="number">3.</span><span class="text">Core Concepts Explained</span></a>
+                <a href="#4"><span class="number">4.</span><span class="text">Proof-of-Concept: C++ Scanner</span></a>
+            </nav>
+        </div>
+
+        <div class="card notice">
+            <p><strong>In short:</strong> An Offset Dumper (or Pattern Scanner) is a tool that dynamically finds memory addresses in Roblox. Since Roblox updates change these addresses, the scanner searches for unique byte patterns (signatures) instead of static addresses, ensuring tools can find what they need even after an update.</p>
+        </div>
+
+        <article>
+            <h2 id="1">
+                The Problem: Roblox's Ever-Changing Memory
+                <a href="#1" class="anchor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </a>
+            </h2>
+
+            <p class="content">
+                Every time Roblox updates, developers who create external tools or analyze the game client face a significant challenge: memory addresses for functions and data structures change. An address that pointed to the player's health one day might point to something completely different or nothing at all the next. This makes tools that rely on static, hard-coded addresses incredibly fragile. They break with every single update.
+            </p>
+
+            <h2 id="2">
+                The Solution: Dynamic Pattern Scanning
+                <a href="#2" class="anchor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </a>
+            </h2>
+            <p class="content">
+                To solve this, we use a technique called <strong>pattern scanning</strong> (or signature scanning). Instead of searching for a specific address, we search for a unique sequence of bytes a "pattern" or "signature" that is associated with the data or function we want to find. Since this sequence of bytes is part of the game's actual machine code, it's far less likely to change between updates than the memory address where it's located.
+                <br><br>
+                An <strong>Offset Dumper</strong> is a tool that automates this process. It scans the running Roblox process for a list of predefined patterns and "dumps" the current memory addresses (offsets) it finds, allowing tools to work reliably across updates.
+            </p>
+
+            <h2 id="3">
+                Core Concepts Explained
+                <a href="#3" class="anchor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </a>
+            </h2>
+
+            <div class="card highlights">
+                <h3>The building blocks of a pattern scanner:</h3>
+                <ul>
+                    <li>
+                        <div class="check">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
+                        <div>
+                            <strong>Signatures (or Patterns):</strong> A unique sequence of bytes representing machine code. Think of it like a unique sentence in a book. Even if the page numbers change, you can find the chapter by searching for that sentence. Example: <code>48 89 5C 24 08</code>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </div>
+                        <div>
+                            <strong>Wildcards (?):</strong> Used to skip bytes within a signature that might change between updates (like an embedded address). The scanner matches the known bytes and ignores the wildcards. Example: <code>48 8D 05 ? ? ? ?</code>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20.49M18 10a8 8 0 0 1-8 8h-1"></path><polyline points="14 10 18 10 18 14"></polyline></svg>
+                        </div>
+                        <div>
+                            <strong>RIP-Relative Addressing:</strong> A critical concept for 64-bit apps. Instructions often reference memory relative to their own location (the Instruction Pointer, or RIP). To find the true address, you must perform a calculation: <code>Address = (Address of Next Instruction) + 32-bit Displacement</code>.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <h2 id="4">
+                Proof-of-Concept: C++ Scanner
+                <a href="#4" class="anchor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </a>
+            </h2>
+            <p class="content">
+                Here is a complete, commented proof-of-concept C++ application that demonstrates how to build a basic pattern scanner. This code finds the Roblox process, scans its memory for a specific signature, and correctly calculates the final address, even when dealing with RIP-relative instructions.
+            </p>
+            <pre><code><span class="token comment">// main.cpp</span>
+<span class="token preprocessor">#include &lt;iostream&gt;</span>
+<span class="token preprocessor">#include &lt;vector&gt;</span>
+<span class="token preprocessor">#include &lt;string&gt;</span>
+<span class="token preprocessor">#include &lt;windows.h&gt;</span>
+<span class="token preprocessor">#include &lt;tlhelp32.h&gt;</span>
+<span class="token preprocessor">#include &lt;iomanip&gt;</span>
+
+<span class="token comment">// A structure to hold our signature details</span>
+<span class="token keyword">struct</span> <span class="token class-name">Signature</span> <span class="token punctuation">{</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span> <span class="token variable">name</span><span class="token punctuation">;</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span> <span class="token variable">pattern</span><span class="token punctuation">;</span>
+    <span class="token type">int</span> <span class="token variable">ripOffset</span><span class="token punctuation">;</span>
+    <span class="token type">int</span> <span class="token variable">instructionLength</span><span class="token punctuation">;</span> <span class="token comment">// Total length of the instruction for RIP calculation</span>
+<span class="token punctuation">};</span>
+
+<span class="token comment">// Converts a string pattern like "48 8D 05 ? ? ? ?" to bytes and a mask.</span>
+<span class="token keyword">bool</span> <span class="token function">PatternToBytes</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span><span class="token operator">&</span> <span class="token variable">pattern</span><span class="token punctuation">,</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">vector</span><span class="token operator">&lt;</span><span class="token type">BYTE</span><span class="token operator">&gt;</span><span class="token operator">&</span> <span class="token variable">outBytes</span><span class="token punctuation">,</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span><span class="token operator">&</span> <span class="token variable">outMask</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">outBytes</span><span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">outMask</span><span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token type">size_t</span> <span class="token variable">i</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token variable">i</span> <span class="token operator">&lt;</span> <span class="token variable">pattern</span><span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">i</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">' '</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token variable">i</span><span class="token operator">++</span><span class="token punctuation">;</span> <span class="token keyword">continue</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">i</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'?'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">outBytes</span><span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token number">0x00</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token variable">outMask</span> <span class="token operator">+=</span> <span class="token string">'?'</span><span class="token punctuation">;</span>
+            <span class="token variable">i</span> <span class="token operator">+=</span> <span class="token punctuation">(</span><span class="token variable">i</span> <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">&lt;</span> <span class="token variable">pattern</span><span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">i</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'?'</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token number">2</span> <span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">i</span> <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">&gt;=</span> <span class="token variable">pattern</span><span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token constant">false</span><span class="token punctuation">;</span>
+            <span class="token type">char</span> <span class="token variable">hexChars</span><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">i</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">i</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'\0'</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+            <span class="token variable">outBytes</span><span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token keyword">static_cast</span><span class="token operator">&lt;</span><span class="token type">BYTE</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="token function">strtoul</span><span class="token punctuation">(</span><span class="token variable">hexChars</span><span class="token punctuation">,</span> <span class="token constant">nullptr</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token variable">outMask</span> <span class="token operator">+=</span> <span class="token string">'x'</span><span class="token punctuation">;</span>
+            <span class="token variable">i</span> <span class="token operator">+=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token operator">!</span><span class="token variable">outBytes</span><span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Scans a memory buffer for a given pattern and mask.</span>
+<span class="token type">uintptr_t</span> <span class="token function">ScanBuffer</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token type">BYTE</span><span class="token operator">*</span> <span class="token variable">buffer</span><span class="token punctuation">,</span> <span class="token type">SIZE_T</span> <span class="token variable">bufferSize</span><span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">vector</span><span class="token operator">&lt;</span><span class="token type">BYTE</span><span class="token operator">&gt;</span><span class="token operator">&</span> <span class="token variable">pattern</span><span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span><span class="token operator">&</span> <span class="token variable">mask</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token type">size_t</span> <span class="token variable">patternLen</span> <span class="token operator">=</span> <span class="token variable">pattern</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">patternLen</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token variable">patternLen</span> <span class="token operator">&gt;</span> <span class="token variable">bufferSize</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token type">size_t</span> <span class="token variable">i</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">i</span> <span class="token operator">&lt;=</span> <span class="token variable">bufferSize</span> <span class="token operator">-</span> <span class="token variable">patternLen</span><span class="token punctuation">;</span> <span class="token operator">++</span><span class="token variable">i</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">bool</span> <span class="token variable">match</span> <span class="token operator">=</span> <span class="token constant">true</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token type">size_t</span> <span class="token variable">j</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">j</span> <span class="token operator">&lt;</span> <span class="token variable">patternLen</span><span class="token punctuation">;</span> <span class="token operator">++</span><span class="token variable">j</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">mask</span><span class="token punctuation">[</span><span class="token variable">j</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'x'</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">pattern</span><span class="token punctuation">[</span><span class="token variable">j</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token variable">buffer</span><span class="token punctuation">[</span><span class="token variable">i</span> <span class="token operator">+</span> <span class="token variable">j</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token variable">match</span> <span class="token operator">=</span> <span class="token constant">false</span><span class="token punctuation">;</span>
+                <span class="token keyword">break</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">match</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token variable">i</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Gets the Process ID (PID) for a given process name.</span>
+<span class="token type">DWORD</span> <span class="token function">GetProcessIdByName</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">wstring</span><span class="token operator">&</span> <span class="token variable">processName</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token type">HANDLE</span> <span class="token variable">snapshot</span> <span class="token operator">=</span> <span class="token function">CreateToolhelp32Snapshot</span><span class="token punctuation">(</span><span class="token constant">TH32CS_SNAPPROCESS</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">snapshot</span> <span class="token operator">==</span> <span class="token constant">INVALID_HANDLE_VALUE</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">PROCESSENTRY32W</span> <span class="token variable">processEntry</span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token class-name">PROCESSENTRY32W</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Process32FirstW</span><span class="token punctuation">(</span><span class="token variable">snapshot</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">processEntry</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">do</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_wcsicmp</span><span class="token punctuation">(</span><span class="token variable">processEntry</span><span class="token punctuation">.</span><span class="token variable">szExeFile</span><span class="token punctuation">,</span> <span class="token variable">processName</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token function">CloseHandle</span><span class="token punctuation">(</span><span class="token variable">snapshot</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token variable">processEntry</span><span class="token punctuation">.</span><span class="token variable">th32ProcessID</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span> <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">Process32NextW</span><span class="token punctuation">(</span><span class="token variable">snapshot</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">processEntry</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">CloseHandle</span><span class="token punctuation">(</span><span class="token variable">snapshot</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token type">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">wstring</span> <span class="token variable">targetProcessName</span> <span class="token operator">=</span> <span class="token string">L"RobloxPlayerBeta.exe"</span><span class="token punctuation">;</span>
+    <span class="token class-name">Signature</span> <span class="token variable">sigToFind</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token string">"ExampleRipAddress"</span><span class="token punctuation">,</span>
+        <span class="token string">"48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B 05"</span><span class="token punctuation">,</span>
+        <span class="token number">3</span><span class="token punctuation">,</span> <span class="token comment">// The '?' (displacement) starts at the 3rd byte (0-indexed).</span>
+        <span class="token number">7</span>  <span class="token comment">// The instruction containing the displacement is 7 bytes long.</span>
+    <span class="token punctuation">};</span>
+
+    <span class="token comment">// 1. Find the Roblox process</span>
+    <span class="token type">DWORD</span> <span class="token variable">pid</span> <span class="token operator">=</span> <span class="token function">GetProcessIdByName</span><span class="token punctuation">(</span><span class="token variable">targetProcessName</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">pid</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcerr</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Roblox process not found. Is the game running?"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+        <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcout</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Found Roblox process with PID: "</span> <span class="token operator">&lt;&lt;</span> <span class="token variable">pid</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 2. Open the process to read its memory</span>
+    <span class="token type">HANDLE</span> <span class="token variable">hProcess</span> <span class="token operator">=</span> <span class="token function">OpenProcess</span><span class="token punctuation">(</span><span class="token constant">PROCESS_QUERY_INFORMATION</span> <span class="token operator">|</span> <span class="token constant">PROCESS_VM_READ</span><span class="token punctuation">,</span> <span class="token constant">FALSE</span><span class="token punctuation">,</span> <span class="token variable">pid</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">hProcess</span> <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcerr</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Failed to open process. Error: "</span> <span class="token operator">&lt;&lt;</span> <span class="token function">GetLastError</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+        <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 3. Get main module info to calculate the final offset</span>
+    <span class="token type">uintptr_t</span> <span class="token variable">moduleBaseAddress</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token type">HANDLE</span> <span class="token variable">hModuleSnap</span> <span class="token operator">=</span> <span class="token function">CreateToolhelp32Snapshot</span><span class="token punctuation">(</span><span class="token constant">TH32CS_SNAPMODULE</span> <span class="token operator">|</span> <span class="token constant">TH32CS_SNAPMODULE32</span><span class="token punctuation">,</span> <span class="token variable">pid</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">hModuleSnap</span> <span class="token operator">!=</span> <span class="token constant">INVALID_HANDLE_VALUE</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">MODULEENTRY32W</span> <span class="token variable">moduleEntry</span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token variable">moduleEntry</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token variable">moduleEntry</span><span class="token punctuation">.</span><span class="token variable">dwSize</span> <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token variable">moduleEntry</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Module32FirstW</span><span class="token punctuation">(</span><span class="token variable">hModuleSnap</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">moduleEntry</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_wcsicmp</span><span class="token punctuation">(</span><span class="token variable">moduleEntry</span><span class="token punctuation">.</span><span class="token variable">szModule</span><span class="token punctuation">,</span> <span class="token variable">targetProcessName</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token variable">moduleBaseAddress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token type">uintptr_t</span><span class="token punctuation">)</span><span class="token variable">moduleEntry</span><span class="token punctuation">.</span><span class="token variable">modBaseAddr</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">CloseHandle</span><span class="token punctuation">(</span><span class="token variable">hModuleSnap</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">moduleBaseAddress</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcerr</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Could not find module base address."</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+        <span class="token function">CloseHandle</span><span class="token punctuation">(</span><span class="token variable">hProcess</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcout</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Module base: 0x"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">hex</span> <span class="token operator">&lt;&lt;</span> <span class="token variable">moduleBaseAddress</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">dec</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"\n"</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 4. Iterate over the process's memory regions</span>
+    <span class="token type">uintptr_t</span> <span class="token variable">foundAddress</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token type">uintptr_t</span> <span class="token variable">currentAddress</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">MEMORY_BASIC_INFORMATION</span> <span class="token variable">mbi</span><span class="token punctuation">;</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token type">vector</span><span class="token operator">&lt;</span><span class="token type">BYTE</span><span class="token operator">&gt;</span> <span class="token variable">patternBytes</span><span class="token punctuation">;</span>
+    <span class="token type">std</span><span class="token operator">::</span><span class="token type">string</span> <span class="token variable">mask</span><span class="token punctuation">;</span>
+    <span class="token function">PatternToBytes</span><span class="token punctuation">(</span><span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">pattern</span><span class="token punctuation">,</span> <span class="token variable">patternBytes</span><span class="token punctuation">,</span> <span class="token variable">mask</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">VirtualQueryEx</span><span class="token punctuation">(</span><span class="token variable">hProcess</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token type">LPCVOID</span><span class="token punctuation">)</span><span class="token variable">currentAddress</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">mbi</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token variable">mbi</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">State</span> <span class="token operator">==</span> <span class="token constant">MEM_COMMIT</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">Protect</span> <span class="token operator">&</span> <span class="token punctuation">(</span><span class="token constant">PAGE_READONLY</span> <span class="token operator">|</span> <span class="token constant">PAGE_READWRITE</span> <span class="token operator">|</span> <span class="token constant">PAGE_EXECUTE_READ</span> <span class="token operator">|</span> <span class="token constant">PAGE_EXECUTE_READWRITE</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token type">std</span><span class="token operator">::</span><span class="token type">vector</span><span class="token operator">&lt;</span><span class="token type">BYTE</span><span class="token operator">&gt;</span> <span class="token variable">buffer</span><span class="token punctuation">(</span><span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">RegionSize</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token type">SIZE_T</span> <span class="token variable">bytesRead</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">ReadProcessMemory</span><span class="token punctuation">(</span><span class="token variable">hProcess</span><span class="token punctuation">,</span> <span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">BaseAddress</span><span class="token punctuation">,</span> <span class="token variable">buffer</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">RegionSize</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">bytesRead</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token type">uintptr_t</span> <span class="token variable">localOffset</span> <span class="token operator">=</span> <span class="token function">ScanBuffer</span><span class="token punctuation">(</span><span class="token variable">buffer</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">bytesRead</span><span class="token punctuation">,</span> <span class="token variable">patternBytes</span><span class="token punctuation">,</span> <span class="token variable">mask</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">localOffset</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token type">uintptr_t</span> <span class="token variable">patternAddress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token type">uintptr_t</span><span class="token punctuation">)</span><span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">BaseAddress</span> <span class="token operator">+</span> <span class="token variable">localOffset</span><span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">ripOffset</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token type">int32_t</span> <span class="token variable">displacement</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                        <span class="token function">memcpy</span><span class="token punctuation">(</span><span class="token operator">&</span><span class="token variable">displacement</span><span class="token punctuation">,</span> <span class="token operator">&</span><span class="token variable">buffer</span><span class="token punctuation">[</span><span class="token variable">localOffset</span> <span class="token operator">+</span> <span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">ripOffset</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token variable">displacement</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token variable">foundAddress</span> <span class="token operator">=</span> <span class="token variable">patternAddress</span> <span class="token operator">+</span> <span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">instructionLength</span> <span class="token operator">+</span> <span class="token variable">displacement</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                        <span class="token variable">foundAddress</span> <span class="token operator">=</span> <span class="token variable">patternAddress</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                    <span class="token keyword">break</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token variable">currentAddress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token type">uintptr_t</span><span class="token punctuation">)</span><span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">BaseAddress</span> <span class="token operator">+</span> <span class="token variable">mbi</span><span class="token punctuation">.</span><span class="token variable">RegionSize</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 5. Print the result</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">foundAddress</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token type">uintptr_t</span> <span class="token variable">offset</span> <span class="token operator">=</span> <span class="token variable">foundAddress</span> <span class="token operator">-</span> <span class="token variable">moduleBaseAddress</span><span class="token punctuation">;</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcout</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"\nSuccess!"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcout</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Found '"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">wstring</span><span class="token punctuation">(</span><span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">name</span><span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">name</span><span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"' at address: 0x"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">hex</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">uppercase</span> <span class="token operator">&lt;&lt;</span> <span class="token variable">foundAddress</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcout</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"Offset from module base: 0x"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">hex</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">uppercase</span> <span class="token operator">&lt;&lt;</span> <span class="token variable">offset</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token type">std</span><span class="token operator">::</span><span class="token variable">wcerr</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"\nCould not find signature for '"</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token type">wstring</span><span class="token punctuation">(</span><span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">name</span><span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">sigToFind</span><span class="token punctuation">.</span><span class="token variable">name</span><span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">L"'."</span> <span class="token operator">&lt;&lt;</span> <span class="token type">std</span><span class="token operator">::</span><span class="token variable">endl</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">CloseHandle</span><span class="token punctuation">(</span><span class="token variable">hProcess</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+        </article>
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span>© 2025 x4v.dev, inc.</span>
+                    <span class="footer-maintained">Maintained by @nuvq (x4v)</span>
+                </div>
+                <div class="footer-right">
+                    <a href="https://x4v.dev/terms/">Terms of Service</a>
+                    <a href="https://x4v.dev/privacy/">Privacy Policy</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener("click", function (e) {
+                    e.preventDefault()
+                    const targetId = this.getAttribute("href")
+                    const targetElement = document.querySelector(targetId)
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        })
+                        history.pushState(null, null, targetId)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>
